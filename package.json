@@ -26,7 +26,7 @@
     "react-tools": "^0.12.2"
   },
   "scripts": {
-    "start": "python -m SimpleHTTPServer &",
+    "start": "python -m SimpleHTTPServer > /dev/null 2>&1 &",
     "prewatch": "npm run start && open http://localhost:8000",
     "watch": "node_modules/react-tools/bin/jsx --watch js/ build/",
     "stop": "pkill -f Simple && echo 'Server stopped'"
