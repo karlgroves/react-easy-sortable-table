@@ -83,11 +83,11 @@ var TableHeader = React.createClass({displayName: "TableHeader",
         return function (event) {
 
             var code = event.charCode || event.keyCode,
-                type = event.type;
+                type = event.type,
+                ENTER = 13,
+                SPACE = 32;
 
-            if (type === 'keydown') {
-                var ENTER = 13,
-                    SPACE = 32;
+            if ((type === 'click') || (code === 13 || code === 32)) {
 
                 if ((code !== ENTER) && (code !== SPACE)) {
                     event.stopPropagation();
@@ -95,12 +95,13 @@ var TableHeader = React.createClass({displayName: "TableHeader",
                 else if (code === SPACE) {
                     event.preventDefault();
                 }
+
+                this.props.onSort(column);
             }
-            this.props.onSort(column);
+
         }.bind(this);
     },
 
-    /* if the selectedColumn matches this column update the aria-sort */
     render: function () {
         var selectedColumn = this.props.selectedColumn;
         var cell = function () {
@@ -131,6 +132,7 @@ var TableHeader = React.createClass({displayName: "TableHeader",
                 }
             }, this);
         }.bind(this);
+
 
         return (
             React.createElement("tr", {key: "headerRow"},  cell(this.props.item, this.props.selectedColumn) )

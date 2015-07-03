@@ -83,11 +83,11 @@ var TableHeader = React.createClass({
         return function (event) {
 
             var code = event.charCode || event.keyCode,
-                type = event.type;
+                type = event.type,
+                ENTER = 13,
+                SPACE = 32;
 
-            if (type === 'keydown') {
-                var ENTER = 13,
-                    SPACE = 32;
+            if ((type === 'click') || (code === 13 || code === 32)) {
 
                 if ((code !== ENTER) && (code !== SPACE)) {
                     event.stopPropagation();
@@ -95,8 +95,10 @@ var TableHeader = React.createClass({
                 else if (code === SPACE) {
                     event.preventDefault();
                 }
+
+                this.props.onSort(column);
             }
-            this.props.onSort(column);
+
         }.bind(this);
     },
 
@@ -131,6 +133,7 @@ var TableHeader = React.createClass({
                 }
             }, this);
         }.bind(this);
+
 
         return (
             <tr key="headerRow">{ cell(this.props.item, this.props.selectedColumn) }</tr>
