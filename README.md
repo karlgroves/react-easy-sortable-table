@@ -9,17 +9,20 @@ First install dependencies with NPM
 
 You'll need to have a simple web server running. If you're on a Mac with Python, `cd` to this directory and run:
 
-    python -m SimpleHTTPServer
+    $ npm start
 
-Then open your favorite browser and go to:
+To compile JSX to JS during development:
 
-    http://localhost:8000/
-
-To compile JSX to JS durring development
-
+    # opens default browser and monitors for file changes
     $ npm run watch
 
-The component takes an input of JSON formatted data file:
+To stop the server run:
+
+    $ npm run stop
+
+Note that the start, stop and watch commands assume a *nix distro or OSX machine and that python is installed.
+
+The table component takes an input of JSON formatted data file:
 
     React.render(<TableComponent src="./data/data.json" />, mountNode)
 
