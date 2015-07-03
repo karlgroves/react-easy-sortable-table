@@ -3,7 +3,8 @@ var TableComponent = React.createClass({
     getInitialState: function () {
         return {
             data: [],
-            sortDir: 'ascending'
+            sortDir: '',
+            selectedColumn: ''
         };
     },
 
@@ -39,12 +40,13 @@ var TableComponent = React.createClass({
     },
 
     sort: function (column) {
-        var sortedData = this.sortByColumn(this.state.data, column, this.state.sortDir);
         this.setState({
-            data: sortedData,
-            sortDir: (this.state.sortDir === 'ascending' ? 'descending' : 'ascending')
+            lastSortDir: this.state.sortDir,
+            selectedColumn: column,
+            sortDir: (this.state.sortDir === 'ascending' ? 'descending' : 'ascending'),
+            description: ' sorted by ' + column + ' ' + this.state.sortDir,
+            data: this.sortByColumn(this.state.data, column, this.state.sortDir)
         });
-        this.props.description = ' sorted by ' + column + ' ' + this.state.sortDir;
     },
 
     render: function () {
@@ -54,9 +56,9 @@ var TableComponent = React.createClass({
         if (this.isMounted()) {
             return (
                 <table>
-                    <TableCaption caption={this.props.caption} description={this.props.description || ''} />
+                    <TableCaption caption={this.props.caption} description={this.state.description || ''} />
                     <thead>
-                        <TableHeader onSort={this.sort} sortDir={this.state.sortDir} columns={columns} />
+                        <TableHeader onSort={this.sort} sortDir={this.state.lastSortDir} columns={columns} selectedColumn={this.state.selectedColumn}/>
                     </thead>
                     <TableBody data={data} columns={columns} />
                 </table>
@@ -73,7 +75,7 @@ var TableComponent = React.createClass({
 var TableHeader = React.createClass({
 
     propTypes: {
-        sortDir: React.PropTypes.oneOf(['ascending', 'descending']),
+        sortDir: React.PropTypes.oneOf(['ascending', 'descending', '']),
         onSort: React.PropTypes.func
     },
 
@@ -98,17 +100,25 @@ var TableHeader = React.createClass({
         }.bind(this);
     },
 
+    /* if the selectedColumn matches this column update the aria-sort */
     render: function () {
-        var columns = this.props.columns;
+        var selectedColumn = this.props.selectedColumn;
         var cell = function () {
-            return columns.map(function (c, i) {
-                return <th scope="col" tabIndex="0" role="columnheader" onKeyDown={this.sort(c)}  onClick={this.sort(c)} key={c}>{c}</th>;
+            return this.props.columns.map(function (c, i) {
+                return (
+                    <th scope="col"
+                        tabIndex="0"
+                        role="columnheader"
+                        aria-sort={c === selectedColumn ? this.props.sortDir : ''}
+                        onKeyDown={this.sort(c)}
+                        onClick={this.sort(c)}
+                        key={c}>{c}</th>
+                );
             }, this);
         }.bind(this);
 
-
         return (
-            <tr key="headerRow">{ cell(this.props.item) }</tr>
+            <tr key="headerRow">{ cell(this.props.item, this.props.selectedColumn) }</tr>
         )
     }
 });
@@ -130,15 +140,15 @@ var TableCaption = React.createClass({
 var TableBody = React.createClass({
     render: function () {
         var columns = this.props.columns;
-        var data = this.props.data;
-
         return (
             <tbody>
-        {data.map(function (item, idx) {
-            return <TableRow key={idx} data={item} columns={columns}/>;
-        })}
+            {this.props.data.map(function (item, idx) {
+                return (
+                    <TableRow key={idx} data={item} columns={columns}/>
+                );
+            })}
             </tbody>
-        )
+        );
     }
 });
 
@@ -149,10 +159,7 @@ var TableRow = React.createClass({
         var data = this.props.data;
         var td = function (item) {
 
-            return columns.map(function (c, i) {
-
-
-
+        return columns.map(function (c, i) {
                 return <td key={i}>{item[c]}</td>;
             }, this);
         }.bind(this);
