@@ -3,7 +3,7 @@ var TableComponent = React.createClass({displayName: "TableComponent",
     getInitialState: function () {
         return {
             data: [],
-            sortDir: '',
+            sortDir: 'ascending',
             selectedColumn: ''
         };
     },
@@ -105,15 +105,30 @@ var TableHeader = React.createClass({displayName: "TableHeader",
         var selectedColumn = this.props.selectedColumn;
         var cell = function () {
             return this.props.columns.map(function (c, i) {
-                return (
-                    React.createElement("th", {scope: "col", 
-                        tabIndex: "0", 
-                        role: "columnheader", 
-                        "aria-sort": c === selectedColumn ? this.props.sortDir : '', 
-                        onKeyDown: this.sort(c), 
-                        onClick: this.sort(c), 
-                        key: c}, c)
-                );
+
+                // if the selectedColumn matches this collumn
+                // add the up/down icons and aria-sort attribute
+                if (c === selectedColumn) {
+                    return (
+                        React.createElement("th", {scope: "col", 
+                            tabIndex: "0", 
+                            role: "columnheader", 
+                            className:  this.props.sortDir || '', 
+                            "aria-sort":  this.props.sortDir || '', 
+                            onKeyDown: this.sort(c), 
+                            onClick: this.sort(c), 
+                            key: c}, c, React.createElement("span", {className: "icon", "aria-hidden": "true"}))
+                    );
+                } else {
+                    return (
+                        React.createElement("th", {scope: "col", 
+                            tabIndex: "0", 
+                            role: "columnheader", 
+                            onKeyDown: this.sort(c), 
+                            onClick: this.sort(c), 
+                            key: c}, c)
+                    );
+                }
             }, this);
         }.bind(this);
 

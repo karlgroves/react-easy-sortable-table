@@ -3,7 +3,7 @@ var TableComponent = React.createClass({
     getInitialState: function () {
         return {
             data: [],
-            sortDir: '',
+            sortDir: 'ascending',
             selectedColumn: ''
         };
     },
@@ -105,15 +105,30 @@ var TableHeader = React.createClass({
         var selectedColumn = this.props.selectedColumn;
         var cell = function () {
             return this.props.columns.map(function (c, i) {
-                return (
-                    <th scope="col"
-                        tabIndex="0"
-                        role="columnheader"
-                        aria-sort={c === selectedColumn ? this.props.sortDir : ''}
-                        onKeyDown={this.sort(c)}
-                        onClick={this.sort(c)}
-                        key={c}>{c}</th>
-                );
+
+                // if the selectedColumn matches this collumn
+                // add the up/down icons and aria-sort attribute
+                if (c === selectedColumn) {
+                    return (
+                        <th scope="col"
+                            tabIndex="0"
+                            role="columnheader"
+                            className={ this.props.sortDir || '' }
+                            aria-sort={ this.props.sortDir || '' }
+                            onKeyDown={this.sort(c)}
+                            onClick={this.sort(c)}
+                            key={c}>{c}<span className="icon" aria-hidden="true"></span></th>
+                    );
+                } else {
+                    return (
+                        <th scope="col"
+                            tabIndex="0"
+                            role="columnheader"
+                            onKeyDown={this.sort(c)}
+                            onClick={this.sort(c)}
+                            key={c}>{c}</th>
+                    );
+                }
             }, this);
         }.bind(this);
 
