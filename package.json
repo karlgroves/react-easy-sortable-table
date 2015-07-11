@@ -7,7 +7,7 @@
     "type": "git",
     "url": "https://github.com/brettdewoody/react-table-component"
   },
-  "main": "/build/app.js",
+  "main": "/js/TableComponent.js",
   "keywords": [
     "javascript",
     "react",
