@@ -20,15 +20,17 @@
   },
   "license": "MIT",
   "dependencies": {
+    "babelify": "^6.1.2",
+    "browserify": "^10.2.6",
     "react": "^0.12.2"
   },
   "devDependencies": {
     "react-tools": "^0.12.2"
   },
   "scripts": {
-    "start": "python -m SimpleHTTPServer > /dev/null 2>&1 &",
-    "prewatch": "npm run start && open http://localhost:8000",
-    "watch": "node_modules/react-tools/bin/jsx --watch js/ build/",
+    "prestart": "python -m SimpleHTTPServer > /dev/null 2>&1 &",
+    "start": "npm run build && open http://localhost:8000",
+    "build": "browserify js/app.js -t babelify --outfile build/app.js",
     "stop": "pkill -f Simple && echo 'Server stopped'"
   }
 }
