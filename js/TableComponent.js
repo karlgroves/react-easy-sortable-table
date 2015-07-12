@@ -1,6 +1,7 @@
 var TableComponent = React.createClass({
 
     propTypes: {
+        caption: React.PropTypes.string,
         data: React.PropTypes.array,
         src: React.PropTypes.string,
         tableClass: React.PropTypes.string,
@@ -14,6 +15,7 @@ var TableComponent = React.createClass({
 
     getDefaultProps: function() {
         return {
+            caption: ' ',
             tableClass: '',
             trClass: '',
             thClass: '',
