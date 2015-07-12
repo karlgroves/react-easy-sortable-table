@@ -10,7 +10,9 @@ var TableComponent = React.createClass({
         tdClass: React.PropTypes.string,
         captionClass: React.PropTypes.string,
         tbodyClass: React.PropTypes.string,
-        theadClass: React.PropTypes.string
+        theadClass: React.PropTypes.string,
+        iconAsc: React.PropTypes.string,
+        iconDesc: React.PropTypes.string
     },
 
     getDefaultProps: function() {
@@ -22,7 +24,9 @@ var TableComponent = React.createClass({
             tdClass: '',
             captionClass: '',
             tbodyClass: '',
-            theadClass: ''
+            theadClass: '',
+            iconAsc: '',
+            iconDesc: ''
         }
     },
 
@@ -96,7 +100,15 @@ var TableComponent = React.createClass({
                 <table className={this.props.tableClass} >
                     <TableCaption caption={this.props.caption} description={this.state.description || ''} captionClass={this.props.captionClass} />
                     <thead className={this.props.theadClass}>
-                        <TableHeader thClass={this.props.thClass} trClass={this.props.trClass} onSort={this.sort} sortDir={this.state.lastSortDir} columns={columns} selectedColumn={this.state.selectedColumn}/>
+                        <TableHeader
+                            iconAsc={this.props.iconAsc}
+                            iconDesc={this.props.iconDesc}
+                            thClass={this.props.thClass}
+                            trClass={this.props.trClass}
+                            onSort={this.sort}
+                            sortDir={this.state.lastSortDir}
+                            columns={columns}
+                            selectedColumn={this.state.selectedColumn}/>
                     </thead>
                     <TableBody trClass={this.props.trClass} tdClass={this.props.tdClass} tbodyClass={this.props.tbodyClass} data={data} columns={columns} />
                 </table>
@@ -116,7 +128,9 @@ var TableHeader = React.createClass({
         sortDir: React.PropTypes.oneOf(['ascending', 'descending', '']),
         onSort: React.PropTypes.func,
         thClass: React.PropTypes.string,
-        trClass: React.PropTypes.string
+        trClass: React.PropTypes.string,
+        iconAsc: React.PropTypes.string,
+        iconDesc: React.PropTypes.string
     },
 
     sort: function (column) {
@@ -155,11 +169,11 @@ var TableHeader = React.createClass({
                         <th scope="col"
                             tabIndex="0"
                             role="columnheader"
-                            className={ (this.props.sortDir || '') + this.props.thClass }
+                            className={ (this.props.sortDir + ' ' || '') + this.props.thClass }
                             aria-sort={ this.props.sortDir || '' }
                             onKeyDown={this.sort(c)}
                             onClick={this.sort(c)}
-                            key={c}>{c}<span className="icon" aria-hidden="true"></span></th>
+                            key={c}>{c}<span className={this.props.sortDir === 'ascending' ? this.props.iconAsc : this.props.iconDesc } aria-hidden="true"></span></th>
                     );
                 } else {
                     return (
