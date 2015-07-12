@@ -1,5 +1,30 @@
 var TableComponent = React.createClass({
 
+    propTypes: {
+        data: React.PropTypes.array,
+        src: React.PropTypes.string,
+        tableClass: React.PropTypes.string,
+        trClass: React.PropTypes.string,
+        thClass: React.PropTypes.string,
+        tdClass: React.PropTypes.string,
+        captionClass: React.PropTypes.string,
+        tbodyClass: React.PropTypes.string,
+        theadClass: React.PropTypes.string
+    },
+
+    getDefaultProps: function() {
+        return {
+            tableClass: '',
+            trClass: '',
+            thClass: '',
+            tdClass: '',
+            captionClass: '',
+            tbodyClass: '',
+            theadClass: ''
+        }
+    },
+
+
     getInitialState: function () {
         return {
             data: [],
@@ -9,15 +34,26 @@ var TableComponent = React.createClass({
     },
 
     componentDidMount: function () {
-        $.getJSON(this.props.src, {
-            format: "json"
-        }).done(function (data) {
+
+        // if data is set use that otherwise do an ajax hit
+        // to set the data
+        if (typeof this.props.data !== 'undefined') {
             if (this.isMounted()) {
-                this.setState({
-                    data: data
+                return this.setState({
+                    data: this.props.data
                 });
             }
-        }.bind(this));
+        } else {
+            $.getJSON(this.props.src, {
+                format: "json"
+            }).done(function (data) {
+                if (this.isMounted()) {
+                    this.setState({
+                        data: data
+                    });
+                }
+            }.bind(this));
+        }
     },
 
     getColumnNames: function () {
@@ -55,17 +91,17 @@ var TableComponent = React.createClass({
 
         if (this.isMounted()) {
             return (
-                <table>
-                    <TableCaption caption={this.props.caption} description={this.state.description || ''} />
-                    <thead>
-                        <TableHeader onSort={this.sort} sortDir={this.state.lastSortDir} columns={columns} selectedColumn={this.state.selectedColumn}/>
+                <table className={this.props.tableClass} >
+                    <TableCaption caption={this.props.caption} description={this.state.description || ''} captionClass={this.props.captionClass} />
+                    <thead className={this.props.theadClass}>
+                        <TableHeader thClass={this.props.thClass} trClass={this.props.trClass} onSort={this.sort} sortDir={this.state.lastSortDir} columns={columns} selectedColumn={this.state.selectedColumn}/>
                     </thead>
-                    <TableBody data={data} columns={columns} />
+                    <TableBody trClass={this.props.trClass} tdClass={this.props.tdClass} tbodyClass={this.props.tbodyClass} data={data} columns={columns} />
                 </table>
             )
         } else {
             return (
-                <table></table>
+                <table className={this.props.tableClass}></table>
             )
         }
     }
@@ -76,7 +112,9 @@ var TableHeader = React.createClass({
 
     propTypes: {
         sortDir: React.PropTypes.oneOf(['ascending', 'descending', '']),
-        onSort: React.PropTypes.func
+        onSort: React.PropTypes.func,
+        thClass: React.PropTypes.string,
+        trClass: React.PropTypes.string
     },
 
     sort: function (column) {
@@ -115,7 +153,7 @@ var TableHeader = React.createClass({
                         <th scope="col"
                             tabIndex="0"
                             role="columnheader"
-                            className={ this.props.sortDir || '' }
+                            className={ (this.props.sortDir || '') + this.props.thClass }
                             aria-sort={ this.props.sortDir || '' }
                             onKeyDown={this.sort(c)}
                             onClick={this.sort(c)}
@@ -126,6 +164,7 @@ var TableHeader = React.createClass({
                         <th scope="col"
                             tabIndex="0"
                             role="columnheader"
+                            className={ this.props.thClass }
                             onKeyDown={this.sort(c)}
                             onClick={this.sort(c)}
                             key={c}>{c}</th>
@@ -136,7 +175,7 @@ var TableHeader = React.createClass({
 
 
         return (
-            <tr key="headerRow">{ cell(this.props.item, this.props.selectedColumn) }</tr>
+            <tr key="headerRow" className={this.props.trClass}>{ cell(this.props.item, this.props.selectedColumn) }</tr>
         )
     }
 });
@@ -144,27 +183,36 @@ var TableHeader = React.createClass({
 var TableCaption = React.createClass({
     propTypes: {
         caption: React.PropTypes.string,
-        description: React.PropTypes.string
+        description: React.PropTypes.string,
+        captionClass: React.PropTypes.string
     },
 
     render: function () {
         return (
-            <caption role="status" aria-live="assertive" aria-relevant="all" aria-atomic="true">{this.props.caption + " " + this.props.description}</caption>
+            <caption className={this.props.captionClass} role="status" aria-live="assertive" aria-relevant="all" aria-atomic="true">{this.props.caption + " " + this.props.description}</caption>
         )
     }
 });
 
 
 var TableBody = React.createClass({
+
+    propTypes: {
+        tbodyClass: React.PropTypes.string,
+        trClass: React.PropTypes.string,
+        tdClass: React.PropTypes.string
+    },
+
+
     render: function () {
         var columns = this.props.columns;
         return (
-            <tbody>
+            <tbody className={this.props.tbodyClass}>
             {this.props.data.map(function (item, idx) {
                 return (
-                    <TableRow key={idx} data={item} columns={columns}/>
+                    <TableRow trClass={this.props.trClass} tdClass={this.props.tdClass} key={idx} data={item} columns={columns}/>
                 );
-            })}
+            }.bind(this))}
             </tbody>
         );
     }
@@ -172,18 +220,25 @@ var TableBody = React.createClass({
 
 
 var TableRow = React.createClass({
+
+    propTypes: {
+        trClass: React.PropTypes.string,
+        tdClass: React.PropTypes.string
+    },
+
+
     render: function () {
         var columns = this.props.columns;
         var data = this.props.data;
         var td = function (item) {
 
         return columns.map(function (c, i) {
-                return <td key={i}>{item[c]}</td>;
+                return <td className={this.props.tdClass} key={i}>{item[c]}</td>;
             }, this);
         }.bind(this);
 
         return (
-            <tr key={data}>{ td(data) }</tr>
+            <tr className={this.props.trClass} key={data}>{ td(data) }</tr>
         )
     }
 });
