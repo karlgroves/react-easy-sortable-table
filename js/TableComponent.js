@@ -11,6 +11,7 @@ var TableComponent = React.createClass({
         captionClass: React.PropTypes.string,
         tbodyClass: React.PropTypes.string,
         theadClass: React.PropTypes.string,
+        iconSortable: React.PropTypes.string,
         iconAsc: React.PropTypes.string,
         iconDesc: React.PropTypes.string
     },
@@ -25,6 +26,7 @@ var TableComponent = React.createClass({
             captionClass: '',
             tbodyClass: '',
             theadClass: '',
+            iconSortable: '',
             iconAsc: '',
             iconDesc: ''
         }
@@ -103,6 +105,7 @@ var TableComponent = React.createClass({
                         <TableHeader
                             iconAsc={this.props.iconAsc}
                             iconDesc={this.props.iconDesc}
+                            iconSortable={this.props.iconSortable}
                             thClass={this.props.thClass}
                             trClass={this.props.trClass}
                             onSort={this.sort}
@@ -129,6 +132,7 @@ var TableHeader = React.createClass({
         onSort: React.PropTypes.func,
         thClass: React.PropTypes.string,
         trClass: React.PropTypes.string,
+        iconSortable: React.PropTypes.string,
         iconAsc: React.PropTypes.string,
         iconDesc: React.PropTypes.string
     },
@@ -183,7 +187,7 @@ var TableHeader = React.createClass({
                             className={ this.props.thClass }
                             onKeyDown={this.sort(c)}
                             onClick={this.sort(c)}
-                            key={c}>{c}</th>
+                            key={c}>{c}<span className={this.props.iconSortable} aria-hidden="true"></span></th>
                     );
                 }
             }, this);

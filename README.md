@@ -74,5 +74,6 @@ Classes may optionally be applied to all tags in the generated table.
             captionClass="table-caption"
             tbodyClass="table-body"
             theadClass="table-head"
+            iconSortable="glyphicon"
             iconAsc="glyphicon glyphicon-triangle-top"
             iconDesc="glyphicon glyphicon-triangle-bottom" />
