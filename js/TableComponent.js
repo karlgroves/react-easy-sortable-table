@@ -3,6 +3,7 @@ var TableComponent = React.createClass({
     propTypes: {
         caption: React.PropTypes.string,
         data: React.PropTypes.array,
+        columnLabels: React.PropTypes.array,
         src: React.PropTypes.string,
         tableClass: React.PropTypes.string,
         trClass: React.PropTypes.string,
@@ -19,6 +20,7 @@ var TableComponent = React.createClass({
     getDefaultProps: function() {
         return {
             caption: ' ',
+            columnLabels: [],
             tableClass: '',
             trClass: '',
             thClass: '',
@@ -95,6 +97,7 @@ var TableComponent = React.createClass({
 
     render: function () {
         var columns = this.getColumnNames();
+        var columnLabels = this.props.columnLabels;
         var data = this.state.data;
 
         if (this.isMounted()) {
@@ -111,6 +114,7 @@ var TableComponent = React.createClass({
                             onSort={this.sort}
                             sortDir={this.state.lastSortDir}
                             columns={columns}
+                            columnLabels={columnLabels}
                             selectedColumn={this.state.selectedColumn}/>
                     </thead>
                     <TableBody trClass={this.props.trClass} tdClass={this.props.tdClass} tbodyClass={this.props.tbodyClass} data={data} columns={columns} />
@@ -129,6 +133,7 @@ var TableHeader = React.createClass({
 
     propTypes: {
         sortDir: React.PropTypes.oneOf(['ascending', 'descending', '']),
+        columnLabels: React.PropTypes.array,
         onSort: React.PropTypes.func,
         thClass: React.PropTypes.string,
         trClass: React.PropTypes.string,
@@ -162,10 +167,10 @@ var TableHeader = React.createClass({
 
     /* if the selectedColumn matches this column update the aria-sort */
     render: function () {
+        var columnLabels = this.props.columnLabels;
         var selectedColumn = this.props.selectedColumn;
         var cell = function () {
             return this.props.columns.map(function (c, i) {
-
                 // if the selectedColumn matches this collumn
                 // add the up/down icons and aria-sort attribute
                 if (c === selectedColumn) {
@@ -177,7 +182,7 @@ var TableHeader = React.createClass({
                             aria-sort={ this.props.sortDir || '' }
                             onKeyDown={this.sort(c)}
                             onClick={this.sort(c)}
-                            key={c}>{c}<span className={this.props.sortDir === 'ascending' ? this.props.iconAsc : this.props.iconDesc } aria-hidden="true"></span></th>
+                            key={c}>{ this.props.columnLabels[i] || c }<span className={this.props.sortDir === 'ascending' ? this.props.iconAsc : this.props.iconDesc } aria-hidden="true"></span></th>
                     );
                 } else {
                     return (
@@ -187,7 +192,7 @@ var TableHeader = React.createClass({
                             className={ this.props.thClass }
                             onKeyDown={this.sort(c)}
                             onClick={this.sort(c)}
-                            key={c}>{c}<span className={this.props.iconSortable} aria-hidden="true"></span></th>
+                            key={c}>{ this.props.columnLabels[i] || c }<span className={this.props.iconSortable} aria-hidden="true"></span></th>
                     );
                 }
             }, this);
