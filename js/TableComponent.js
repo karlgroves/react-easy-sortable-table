@@ -1,3 +1,5 @@
+var React = require('react');
+
 var TableComponent = React.createClass({
 
     propTypes: {
@@ -38,6 +40,7 @@ var TableComponent = React.createClass({
     getInitialState: function () {
         return {
             data: [],
+            columns: [],
             sortDir: 'ascending',
             selectedColumn: ''
         };
@@ -50,16 +53,19 @@ var TableComponent = React.createClass({
         if (typeof this.props.data !== 'undefined') {
             if (this.isMounted()) {
                 return this.setState({
-                    data: this.props.data
+                    data: this.props.data,
+                    columns: this.getColumnNames()
                 });
             }
         } else {
             $.getJSON(this.props.src, {
                 format: "json"
             }).done(function (data) {
+                debugger;
                 if (this.isMounted()) {
                     this.setState({
-                        data: data
+                        data: data,
+                        columns: this.getColumnNames()
                     });
                 }
             }.bind(this));
@@ -67,10 +73,8 @@ var TableComponent = React.createClass({
     },
 
     getColumnNames: function () {
-        if (this.isMounted()) {
-            var firstEl = this.state.data[0];
-            return Object.keys(firstEl);
-        }
+        var firstEl = this.props.data[0];
+        return Object.keys(firstEl);
     },
 
     sortByColumn: function (array, column, sortDir) {
@@ -96,35 +100,29 @@ var TableComponent = React.createClass({
     },
 
     render: function () {
-        var columns = this.getColumnNames();
         var columnLabels = this.props.columnLabels;
         var data = this.state.data;
 
-        if (this.isMounted()) {
-            return (
-                <table className={this.props.tableClass} >
-                    <TableCaption caption={this.props.caption} description={this.state.description || ''} captionClass={this.props.captionClass} />
-                    <thead className={this.props.theadClass}>
-                        <TableHeader
-                            iconAsc={this.props.iconAsc}
-                            iconDesc={this.props.iconDesc}
-                            iconSortable={this.props.iconSortable}
-                            thClass={this.props.thClass}
-                            trClass={this.props.trClass}
-                            onSort={this.sort}
-                            sortDir={this.state.lastSortDir}
-                            columns={columns}
-                            columnLabels={columnLabels}
-                            selectedColumn={this.state.selectedColumn}/>
-                    </thead>
-                    <TableBody trClass={this.props.trClass} tdClass={this.props.tdClass} tbodyClass={this.props.tbodyClass} data={data} columns={columns} />
-                </table>
-            )
-        } else {
-            return (
-                <table className={this.props.tableClass}></table>
-            )
-        }
+        return (
+            <table className={this.props.tableClass} >
+                <TableCaption caption={this.props.caption} description={this.state.description || ''} captionClass={this.props.captionClass} />
+                <thead className={this.props.theadClass}>
+                    <TableHeader
+                        iconAsc={this.props.iconAsc}
+                        iconDesc={this.props.iconDesc}
+                        iconSortable={this.props.iconSortable}
+                        thClass={this.props.thClass}
+                        trClass={this.props.trClass}
+                        onSort={this.sort}
+                        sortDir={this.state.lastSortDir}
+                        columns={this.state.columns}
+                        columnLabels={columnLabels}
+                        selectedColumn={this.state.selectedColumn}/>
+                </thead>
+                <TableBody trClass={this.props.trClass} tdClass={this.props.tdClass} tbodyClass={this.props.tbodyClass} data={data} columns={this.state.columns} />
+            </table>
+        )
+
     }
 });
 
